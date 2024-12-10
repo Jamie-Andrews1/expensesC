@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#define MAX_EXPENSES 100
+
 
 typedef struct Expense
 {
@@ -7,20 +10,7 @@ typedef struct Expense
     double amount;
 } expense;
 
-
-int main(void) 
-{
-
-    expense *expensePtr, exp;
-    expensePtr = &exp;
-    strcpy(expensePtr->desc, "");
-    expensePtr->amount = 0.0;
-    int i, n;
-    int valid_input[] = {1, 2, 3};
-    int array_length = sizeof(valid_input) / sizeof(valid_input[0]);
-    int expense_entered = 0;
-
- int getValidChoice(int valid_input[], int array_length) {
+int getValidChoice(int valid_input[], int array_length) {
     int choice;
     int is_valid = 0;   
 
@@ -46,39 +36,72 @@ int main(void)
     return choice;
 }
     
-    void handleExpenseOption(int choice) {
+void handleExpenseOption(expense *expensePtr, int *expense_count, int n, int *exit) {
+    int choice;
+    int valid_input[] = {1, 2, 3};
+    int array_length = sizeof(valid_input) / sizeof(valid_input[0]);
+
+        choice = getValidChoice(valid_input, array_length);
+
     switch(choice) {
         case 1:
+            if (*expense_count < n) {
             printf("Please enter your expense description: ");
-            scanf("%s", expensePtr->desc);
+            scanf("%s", expensePtr[*expense_count].desc);
             printf("Please enter your expense amount: ");
-            scanf("%lf", &expensePtr->amount);
-            expense_entered = 1;
+            scanf("%lf", &expensePtr[*expense_count].amount);
+            (*expense_count)++;
+            } else {
+                printf("Maximum number of expenses reached.\n");
+            }
             break;
         case 2:
-            if(expense_entered){
-            printf("Description: %s\n", expensePtr->desc);
-            printf("Amount: %.2f\n\n", expensePtr->amount);
+            if(*expense_count > 0){
+            for(int i = 0; i < *expense_count; i++){
+            printf("Description: %s\tAmount: %.2f\n\n", expensePtr[i].desc, expensePtr[i].amount);}
             } else {
                 printf("No expense entered yet. Please enter an expense first.\n\n");
                 }
             break;
         case 3:
             printf("Exiting...\n");
+            *exit = 0;
             break;
         default:
             printf("Invalid option\n");
     }
 }
 
+
+int main(void) 
+{
+    expense expenses[MAX_EXPENSES];
+    expense *expensePtr, exp;
+    expensePtr = &exp;
+    strcpy(expensePtr->desc, "");
+    int expense_count = 0;
+    expensePtr->amount = 0.0;
+    int i;
+    int expense_entered = 0;
+    int exit = 1;
+    int n = MAX_EXPENSES;
+
+        // allocating memory for n numbers of struct person
+        expensePtr = ( expense*) malloc(n * sizeof( expense ));
+
+        if (expensePtr == NULL) {
+        printf("Memory allocation failed\n");
+        return 1;
+    }
+    
     int running = 1;
     while (running) {
-        int user_choice = getValidChoice(valid_input, array_length);
-        handleExpenseOption(user_choice);
-        if (user_choice == 3) {
+        handleExpenseOption(expensePtr, &expense_count, n, &exit);
+        if (exit == 0) {
             running = 0;
         }
     }
+    free(expensePtr);
     return 0;
 
 }
