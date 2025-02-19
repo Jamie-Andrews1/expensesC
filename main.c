@@ -3,8 +3,7 @@
 #include <stdlib.h>
 #define MAX_EXPENSES 100
 
-
-typedef struct Expense
+typedef struct
 {
     char desc[50];
     double amount;
@@ -12,13 +11,13 @@ typedef struct Expense
 
 int getValidChoice(int valid_input[], int array_length) {
     int choice;
-    int is_valid = 0;   
+    int is_valid = 0;
 
     do {
-        printf("\t\t Expense Tracker \n\n");
+        printf("\n\n\t\t Expense Tracker \n\n");
 
         printf("Would you like to: \n\n");
-        printf("1. Enter Expenses \n2. View Expenses \n3. Exit \n\n");
+        printf("1. Enter An Expense \n2. View Expenses \n3. Update An Expense \n4. Remove An Expense \n5. Exit  \n\n");
         scanf("%d", &choice);
 
         for (int i = 0; i < array_length; i++) {
@@ -38,7 +37,7 @@ int getValidChoice(int valid_input[], int array_length) {
     
 void handleExpenseOption(expense *expensePtr, int *expense_count, int n, int *exit) {
     int choice;
-    int valid_input[] = {1, 2, 3};
+    int valid_input[] = {1, 2, 3, 4, 5};
     int array_length = sizeof(valid_input) / sizeof(valid_input[0]);
 
         choice = getValidChoice(valid_input, array_length);
@@ -47,7 +46,7 @@ void handleExpenseOption(expense *expensePtr, int *expense_count, int n, int *ex
         case 1:
             if (*expense_count < n) {
             printf("Please enter your expense description: ");
-            scanf("%s", expensePtr[*expense_count].desc);
+            scanf("%49s", expensePtr[*expense_count].desc);
             printf("Please enter your expense amount: ");
             scanf("%lf", &expensePtr[*expense_count].amount);
             (*expense_count)++;
@@ -58,12 +57,57 @@ void handleExpenseOption(expense *expensePtr, int *expense_count, int n, int *ex
         case 2:
             if(*expense_count > 0){
             for(int i = 0; i < *expense_count; i++){
-            printf("Description: %s\tAmount: %.2f\n\n", expensePtr[i].desc, expensePtr[i].amount);}
+            printf("\n%d. Description: %s\t\tAmount: %.2f\n",i, expensePtr[i].desc, expensePtr[i].amount);}
+
             } else {
                 printf("No expense entered yet. Please enter an expense first.\n\n");
                 }
             break;
         case 3:
+        if(*expense_count > 0){
+            int exp;
+            printf("Which expense would you like to update?\n");
+            for(int i = 0; i < *expense_count; i++){
+            printf("\n%d. Description: %s\t\tAmount: %.2f\n",i, expensePtr[i].desc, expensePtr[i].amount);}
+            printf("\nPlease enter your expense number to update: ");
+            scanf("%d", &exp);
+            while(exp > *expense_count - 1){
+            printf("\n expense doesn't exist please try again\n");
+            printf("\nPlease enter your expense number to update: ");
+            scanf("%d", &exp);
+            }
+            printf("Please enter your expense description: ");
+            scanf("%49s", expensePtr[exp].desc);
+            printf("Please enter your expense amount: ");
+            scanf("%lf", &expensePtr[exp].amount);
+            } else {    
+            printf("No expense entered yet. Please enter an expense first.\n\n");
+            }
+        break;
+        case 4:
+        if(*expense_count > 0){
+            int exp;
+            printf("Which expense would you like to remove?\n");
+            for(int i = 0; i < *expense_count; i++){
+            printf("\n%d. Description: %s\t\tAmount: %.2f\n",i, expensePtr[i].desc, expensePtr[i].amount);}
+            printf("\nPlease enter your expense number to remove: ");
+            scanf("%d", &exp);
+            while(exp > *expense_count - 1){
+            printf("\n expense doesn't exist please try again\n");
+            printf("\nPlease enter your expense number to remove: ");
+            scanf("%d", &exp);
+            }
+            printf("expense %d removed\n", exp);
+            for (int i = exp; i < *expense_count - 1; i++) {
+                expensePtr[i] = expensePtr[i + 1];
+            }
+            (*expense_count)--;
+
+            } else {    
+                printf("No expense entered yet. Please enter an expense first.\n\n");
+                }
+            break;
+            case 5:
             printf("Exiting...\n");
             *exit = 0;
             break;
@@ -73,7 +117,7 @@ void handleExpenseOption(expense *expensePtr, int *expense_count, int n, int *ex
 }
 
 
-int main(void) 
+int main() 
 {
     expense expenses[MAX_EXPENSES];
     expense *expensePtr, exp;
@@ -103,5 +147,5 @@ int main(void)
     }
     free(expensePtr);
     return 0;
-
+    
 }
